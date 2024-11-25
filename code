@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Book</title>
+    <style>
+        body ,html{
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #3498db;
+        }
+        .recipe-form, .recipe-list {
+            margin-top: 20px;
+        }
+        input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .recipe-item {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .recipe-item:hover {
+            background-color: #ecf0f1;
+        }
+        .recipe-details {
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Recipe Book</h1>
+        <!-- Recipe Form -->
+        <div class="recipe-form">
+            <h2>Add a New Recipe</h2>
+            <input type="text" id="recipe-title" placeholder="Recipe Title" required />
+            <textarea id="recipe-ingredients" rows="5" placeholder="Ingredients" required></textarea>
+            <textarea id="recipe-instructions" rows="5" placeholder="Instructions" required></textarea>
+            <button id="add-recipe-btn">Add Recipe</button>
+        </div>
+        <!-- Recipe List -->
+        <div class="recipe-list">
+            <h2>Recipe List</h2>
+            <div id="recipe-list-container"></div>
+        </div>
+        <!-- Recipe Details -->
+        <div class="recipe-details" id="recipe-details">
+            <h2 id="recipe-detail-title"></h2>
+            <h3>Ingredients</h3>
+            <p id="recipe-detail-ingredients"></p>
+            <h3>Instructions</h3>
+            <p id="recipe-detail-instructions"></p>
+            <button onclick="closeDetails()">Close</button>
+        </div>
+    </div>
+    <script>
+        const addRecipeBtn = document.getElementById('add-recipe-btn');
+        const recipeListContainer = document.getElementById('recipe-list-container');
+        const recipeTitleInput = document.getElementById('recipe-title');
+        const recipeIngredientsInput = document.getElementById('recipe-ingredients');
+        const recipeInstructionsInput = document.getElementById('recipe-instructions');
+        const recipeDetailsContainer = document.getElementById('recipe-details');
+        const recipeDetailTitle = document.getElementById('recipe-detail-title');
+        const recipeDetailIngredients = document.getElementById('recipe-detail-ingredients');
+        const recipeDetailInstructions = document.getElementById('recipe-detail-instructions');
+
+        let recipes = JSON.parse(localStorage.getItem('recipes')) || [];
+
+        // Function to render the list of recipes
+        function renderRecipeList() {
+            recipeListContainer.innerHTML = '';
+            recipes.forEach((recipe, index) => {
+                const recipeItem = document.createElement('div');
+                recipeItem.classList.add('recipe-item');
+                recipeItem.textContent = recipe.title;
+                recipeItem.onclick = () => showRecipeDetails(index);
+                recipeListContainer.appendChild(recipeItem);
+            });
+        }
+
+        // Function to add a new recipe
+        function addRecipe() {
+            const title = recipeTitleInput.value.trim();
+            const ingredients = recipeIngredientsInput.value.trim();
+            const instructions = recipeInstructionsInput.value.trim();
+
+            if (title && ingredients && instructions) {
+                const newRecipe = { title, ingredients, instructions };
+                recipes.push(newRecipe);
+                localStorage.setItem('recipes', JSON.stringify(recipes));
+
+                // Clear inputs after adding
+                recipeTitleInput.value = '';
+                recipeIngredientsInput.value = '';
+                recipeInstructionsInput.value = '';
+
+                renderRecipeList();
+            } else {
+                alert('Please fill all fields.');
+            }
+        }
+
+        // Function to show recipe details
+        function showRecipeDetails(index) {
+            const recipe = recipes[index];
+            recipeDetailTitle.textContent = recipe.title;
+            recipeDetailIngredients.textContent = recipe.ingredients;
+            recipeDetailInstructions.textContent = recipe.instructions;
+            recipeDetailsContainer.style.display = 'block';
+        }
+
+        // Function to close the recipe details
+        function closeDetails() {
+            recipeDetailsContainer.style.display = 'none';
+        }
+
+        // Add event listener to the Add Recipe button
+        addRecipeBtn.addEventListener('click', addRecipe);
+
+        // Render the recipe list when the page loads
+        renderRecipeList();
+    </script>
+
+</body>
+</html>
